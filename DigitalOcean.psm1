@@ -1,4 +1,17 @@
-#Module: DigitalOcean
+<#
+.SYNOPSIS
+A collection of functions to call DigitalOceans API.
+
+.EXAMPLE
+
+
+.NOTES
+AUTHOR: Aaron P. Miller
+
+.LINK
+Invoke-RESTMethod
+#>
+
 
 Function Set-DODefaultAuthVariables {
     PARAM (
