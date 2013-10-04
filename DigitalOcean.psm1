@@ -1,12 +1,13 @@
 <#
 .SYNOPSIS
-A collection of functions to call DigitalOceans API.
+A collection of functions to call DigitalOcean's API.
 
 .EXAMPLE
 
 
 .NOTES
 AUTHOR: Aaron P. Miller
+REQUIRES: Powershell 3.0
 
 .LINK
 Invoke-RESTMethod
