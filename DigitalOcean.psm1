@@ -46,13 +46,14 @@ Function Invoke-DOAPI {
     $uri += "?client_id=$clientID&api_key=$apiKey"
     [string]$uriPath = $uri -join '/'
     if ($params) {
-        $uriPath += "`&$($sshKeyIDs -join '&')"
+        $uriPath += "`&$($params -join '&')"
     }
+    Write-Host $uriPath
     Invoke-RESTMethod -Uri $uriPath | % {$_.$(Get-Member -InputObject $_ -MemberType NoteProperty | ? {$_.Name -ne 'status'} | % {$_.Name})}
 }
 
 # Droplets
-# Todo: New, reboot, power_cycle, shutdown, power_off, power_on, password_reset, resize, snapshot, restore, rebuild, enable_backups, disable_backups, rename, destroy*
+# Todo / Improve: New - check if privatenetwork is available..nyc2? Before resize we may need to check to make sure it's off
 Function Get-DODroplet {
     PARAM (
         [Parameter(Mandatory=$True)][string]$clientID,
@@ -103,6 +104,146 @@ Function Remove-DODroplet {
     }
     Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'destroy' -params $params
 }
+
+Function Reboot-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID
+    )
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'reboot'
+}
+
+Function PowerCycle-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID
+    )
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'power_cycle'
+}
+
+Function Shutdown-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID
+    )
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'shutdown'
+}
+
+Function PowerOff-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID
+    )
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'power_off'
+}
+
+Function PowerOn-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID
+    )
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'power_on'
+}
+
+Function PasswordReset-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID
+    )
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'password_reset'
+}
+
+Function Resize-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID,
+        [Parameter(Mandatory=$True)][int]$sizeID
+    )
+    [array]$params = @()
+    $params += "size_id=$sizeID"
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'resize' -params $params
+}
+
+Function Snapshot-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID,
+        [string]$name
+    )
+    [array]$params = @()
+    if ($name) {
+        $params += "name=$name"
+    }
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'snapshot' -params $params
+}
+
+Function Restore-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID,
+        [Parameter(Mandatory=$True)][int]$imageID
+    )
+    [array]$params = @()
+    $params += "image_id=$imageID"
+
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'restore' -params $params
+}
+
+Function Rebuild-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID,
+        [Parameter(Mandatory=$True)][int]$imageID
+    )
+    [array]$params = @()
+    $params += "image_id=$imageID"
+
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'rebuild' -params $params
+}
+
+Function EnableBackups-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID
+    )
+
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'enable_backups'
+}
+
+Function DisableBackups-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID
+    )
+
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'disable_backups'
+}
+
+Function Rename-DODroplet {
+    PARAM (
+        [Parameter(Mandatory=$True)][string]$clientID,
+        [Parameter(Mandatory=$True)][string]$apiKey,
+        [Parameter(Mandatory=$True)][int]$dropletID,
+        [Parameter(Mandatory=$True)][string]$name
+    )
+    [array]$params = @()
+    $params += "name=$name"
+
+    Invoke-DOAPI -clientID $clientID -apiKey $apiKey -section 'droplets' -itemID $dropletID -method 'rename' -params $params
+}
+
 
 
 # Regions
