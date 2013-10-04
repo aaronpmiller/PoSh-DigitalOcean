@@ -48,7 +48,6 @@ Function Invoke-DOAPI {
     if ($params) {
         $uriPath += "`&$($params -join '&')"
     }
-    Write-Host $uriPath
     Invoke-RESTMethod -Uri $uriPath | % {$_.$(Get-Member -InputObject $_ -MemberType NoteProperty | ? {$_.Name -ne 'status'} | % {$_.Name})}
 }
 
