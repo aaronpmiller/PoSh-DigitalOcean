@@ -1,4 +1,4 @@
-Import-Module C:\Users\Aaron\Repos\PoSh-DigitalOcean\DigitalOcean.psm1 -Force
+Import-Module .\DigitalOcean.psm1 -Force
 
 
 Set-DODefaultAuthVariables -clientID 'Your digitalocean clientID' -apiKey 'your digitalocean api key goes here'
